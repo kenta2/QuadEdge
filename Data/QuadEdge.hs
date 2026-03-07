@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes, UnicodeSyntax, FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
 
 {- | The quad-edge data structure is commonly used in computational geometry for representing triangulations.
      It represents simultaneously both the map, its dual and mirror image.
@@ -90,11 +91,13 @@ spliceM q a b
 
   where
 
-  update (i,r,Normal) _ n = do Just e ← MGV.read q i
-                               MGV.write q i (Just $ updET e r n)
+  update (i,r,Normal) _ n = do MGV.read q i >>= \case
+                                 Nothing → undefined -- abort if working on deleted edge
+                                 Just e → MGV.write q i (Just $ updET e r n)
 
-  update (i,r,Flipped) z _  = do Just e ← MGV.read q i
-                                 MGV.write q i (Just $ updET e (incrDir r) (flip z))
+  update (i,r,Flipped) z _  = do MGV.read q i >>= \case
+                                   Nothing → undefined -- abort if working on deleted edge
+                                   Just e → MGV.write q i (Just $ updET e (incrDir r) (flip z))
 
   updET e r v = e { edgeTable = updateET (edgeTable e) r v }
 
@@ -174,8 +177,9 @@ updateAttr ∷ QEDS a → EdgeRef → a → QEDS a
 updateAttr q (i,_,_) a = GV.modify f q
     where
       f v = do
-            Just x ← MGV.read v i
-            MGV.write v i (Just x{attributes=a})
+            MGV.read v i >>= \case
+              Nothing → undefined -- abort if working on deleted edge
+              Just x → MGV.write v i (Just x{attributes=a})
 
 ------------------------------------------------------------------------------
 -- * Alternate edge creation/deletion routines
@@ -271,11 +275,13 @@ comp g f qeds x = g . onext qeds $ f x
 
 onextM,oprevM,lnextM,lprevM,rnextM,rprevM,dnextM,dprevM ∷ MQEDS s a → EdgeRef → ST s EdgeRef
 
-onextM q (i, r, f) = do Just e ← MGV.read q i
-                        let t = edgeTable e
-                        return $ if f == Normal
-                                   then lookupET r t
-                                   else flip (rot (lookupET (incrDir r) t))
+onextM q (i, r, f) = do MGV.read q i >>= \case
+                          Nothing → undefined -- abort if working on deleted edge
+                          Just e → do
+                            let t = edgeTable e
+                            return $ if f == Normal
+                                     then lookupET r t
+                                     else flip (rot (lookupET (incrDir r) t))
 
 compM ∷ (EdgeRef → b) → (t → EdgeRef) → MQEDS s a → t → ST s b
 compM g f qeds x = do e ← onextM qeds (f x)
