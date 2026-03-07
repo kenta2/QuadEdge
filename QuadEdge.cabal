@@ -7,7 +7,7 @@ Author:              Neal Alexander
 Maintainer:          NHAlxr@gmail.com
 Category:            Data
 Build-Type:          Simple
-Cabal-Version:       >=1.6
+Cabal-Version:       >=1.8
 
 Library
   Build-Depends:     base >= 3 && < 5, random >= 1, vector >= 0.6
