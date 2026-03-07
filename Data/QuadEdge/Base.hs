@@ -10,7 +10,7 @@ import Prelude hiding (flip)
 
 type Index = Int
 
-data Edge a = Edge { edgeTable :: EdgeTable, 
+data Edge a = Edge { edgeTable :: EdgeTable,
                      attributes :: a } deriving (Eq, Show, Read)
 
 type EdgeRef = (Index, Direction, Orientation)
@@ -21,9 +21,9 @@ data Orientation = Normal | Flipped deriving (Eq, Ord, Enum, Show, Read)
 
 
 incrDir, decrDir              :: Direction -> Direction
-incrDir x		      = case x of { Rot0 -> Rot1; Rot1 -> Rot2; 
+incrDir x		      = case x of { Rot0 -> Rot1; Rot1 -> Rot2;
 					    Rot2 -> Rot3; Rot3 -> Rot0 }
-decrDir x		      = case x of { Rot0 -> Rot3; Rot1 -> Rot0; 
+decrDir x		      = case x of { Rot0 -> Rot3; Rot1 -> Rot0;
 					    Rot2 -> Rot1; Rot3 -> Rot2 }
 
 edgesET			      :: EdgeTable -> [EdgeRef]
@@ -63,5 +63,3 @@ sym			      = rot . rot
 
 flip (e, r, Normal)	      = (e, r, Flipped)
 flip (e, r, Flipped)	      = (e, r, Normal)
-
-

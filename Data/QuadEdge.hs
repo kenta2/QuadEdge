@@ -2,7 +2,7 @@
 
 {- | The quad-edge data structure is commonly used in computational geometry for representing triangulations.
      It represents simultaneously both the map, its dual and mirror image.
-     
+
      The fundamental idea behind the quad-edge structure is the recognition that a single edge, in a closed
      polygonal mesh topology, sits between exactly two faces and exactly two vertices. Thus, it can represent
      a dual of the graph simply by reversing the convention on what is a vertex and what is a face.
@@ -27,7 +27,7 @@ import qualified Data.Vector.Generic as GV
 import qualified Data.Vector.Generic.Mutable as MGV
 import qualified Data.Vector.Fusion.Stream as S
 
-import System.Random 
+import System.Random
 
 type QEDS  a   = IV.Vector    (Maybe (Edge a))
 type MQEDS s a = MV.MVector s (Maybe (Edge a))
@@ -42,15 +42,15 @@ new = GV.empty
 
 
 ------------------------------------------------------------------------------
--- * Topological modification 
+-- * Topological modification
 
 -- | Opens up the QEDS for in-place toplogical modification
 
-mutate ∷ QEDS a → (forall s. MQEDS s a → ST s ()) → QEDS a 
-mutate q f = GV.modify f q 
+mutate ∷ QEDS a → (forall s. MQEDS s a → ST s ()) → QEDS a
+mutate q f = GV.modify f q
 
 
--- | Create a group of new edges and open up the QEDS 
+-- | Create a group of new edges and open up the QEDS
 
 mutateNEs ∷ QEDS a → [a] → ([EdgeRef] → forall s. MQEDS s a → ST s ()) → (QEDS a, [EdgeRef])
 mutateNEs q xs f = (GV.modify (f es) q2, es)
@@ -71,17 +71,17 @@ mutateNE q x f = (GV.modify (f e) q2, e)
 
 spliceM ∷ MQEDS s a → EdgeRef → EdgeRef → ST s ()
 spliceM q a b
-  | (isPrimal a && isPrimal b) || (isDual a && isDual b) 
+  | (isPrimal a && isPrimal b) || (isDual a && isDual b)
   = do oa ← onextM q a
        if b == flip oa
 	  then return ()
-          else do 
+          else do
                ob ← onextM q b
 	       let x  = rot oa
                    y  = rot ob
 	       ox ← onextM q x
                oy ← onextM q y
-	       update a y ob 
+	       update a y ob
                update b x oa
 	       update x b oy
                update y a ox
@@ -117,13 +117,13 @@ deleteEdgeM q e@(i,_,_) = do
 -- | Return all valid edges in the QEDS
 
 edges ∷ QEDS a → IV.Vector (Edge a)
-edges = GV.map fromJust . GV.filter isJust 
+edges = GV.map fromJust . GV.filter isJust
 
 
 -- | Return all valid edge references in the QEDS
 
 edgerefs ∷ QEDS a → IV.Vector EdgeRef
-edgerefs q = GV.unfoldr f 0 
+edgerefs q = GV.unfoldr f 0
     where
       f i | i >= GV.length q = Nothing
           | isValid q r      = Just (r,i+1)
@@ -147,10 +147,10 @@ getAttr q e = attributes (getEdge q e)
 -- | Return a random valid EdgeRef
 
 randomEdgeRef ∷ RandomGen g => QEDS a → g → (EdgeRef, g)
-randomEdgeRef cdt g1 = 
+randomEdgeRef cdt g1 =
   case cdt GV.! r of
     Just _  → ((r,Rot0,Normal),g2)
-    Nothing → randomEdgeRef cdt g2 
+    Nothing → randomEdgeRef cdt g2
 
   where
     (r,g2) = randomR (0, (GV.length cdt) - 1) g1
@@ -166,7 +166,7 @@ isValid q (i,_,_) = isJust $ q GV.! i
 -- * Edge updating
 
 updateEdge ∷ QEDS a → EdgeRef → Edge a → QEDS a
-updateEdge q (i,_,_) e = GV.modify f q 
+updateEdge q (i,_,_) e = GV.modify f q
     where
       f v = MGV.write v i (Just e)
 
@@ -192,7 +192,7 @@ makeEdges z xs = (qeds, S.fromList $ reverse zs)
       (qeds,zs) = S.foldl f (z,[]) xs
           where
             f (q,es) a = (q2,e:es)
-                where 
+                where
                   (q2,e) = makeEdge q a
 
 
@@ -220,7 +220,7 @@ ring q f start@(i,_,_) = S.unfoldr g (Just start)
                  | otherwise = Just (e, Nothing)
                  where
                    e'@(j,_,_) = f q e
-            
+
 
 ------------------------------------------------------------------------------
 -- * Adjacency Operators
@@ -237,31 +237,31 @@ onext q er@(_,r,f)
 -- | CW around the origin
 
 oprev ∷ QEDS a → EdgeRef → EdgeRef
-oprev = rot `comp` rot       
+oprev = rot `comp` rot
 
 -- | CCW around the left face
 lnext ∷ QEDS a → EdgeRef → EdgeRef
-lnext = rot `comp` rotInv    
+lnext = rot `comp` rotInv
 
 -- | CW around the left face
 lprev ∷ QEDS a → EdgeRef → EdgeRef
-lprev = sym `comp` id        
+lprev = sym `comp` id
 
 -- | CCW around the right face
 rnext ∷ QEDS a → EdgeRef → EdgeRef
-rnext = rotInv `comp` rot    
+rnext = rotInv `comp` rot
 
 -- | CW around the right face
 rprev ∷ QEDS a → EdgeRef → EdgeRef
-rprev = id `comp` sym        
+rprev = id `comp` sym
 
 -- | CCW around the destination
 dnext ∷ QEDS a → EdgeRef → EdgeRef
-dnext = sym `comp` sym       
+dnext = sym `comp` sym
 
 -- | CW around the destination
 dprev ∷ QEDS a → EdgeRef → EdgeRef
-dprev = rotInv `comp` rotInv 
+dprev = rotInv `comp` rotInv
 
 comp ∷ (EdgeRef → a) → (b → EdgeRef) → QEDS d → b → a
 comp g f qeds x = g . onext qeds $ f x
@@ -273,7 +273,7 @@ onextM,oprevM,lnextM,lprevM,rnextM,rprevM,dnextM,dprevM ∷ MQEDS s a → EdgeRe
 
 onextM q (i, r, f) = do Just e ← MGV.read q i
                         let t = edgeTable e
-                        return $ if f == Normal 
+                        return $ if f == Normal
                                    then lookupET r t
                                    else flip (rot (lookupET (incrDir r) t))
 
@@ -287,6 +287,6 @@ lprevM = sym `compM` id
 rnextM = rotInv `compM` rot
 rprevM = id `compM` sym
 dnextM = sym `compM` sym
-dprevM = rotInv `compM` rotInv 
+dprevM = rotInv `compM` rotInv
 
 -------
