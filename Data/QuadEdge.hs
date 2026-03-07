@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes, UnicodeSyntax, FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE LambdaCase #-}
 
 {- | The quad-edge data structure is commonly used in computational geometry for representing triangulations.
@@ -53,10 +54,13 @@ mutate q f = GV.modify f q
 
 -- | Create a group of new edges and open up the QEDS
 
-mutateNEs ∷ QEDS a → [a] → ([EdgeRef] → forall s. MQEDS s a → ST s ()) → (QEDS a, [EdgeRef])
+mutateNEs ∷ forall a. QEDS a → [a] → ([EdgeRef] → forall s. MQEDS s a → ST s ()) → (QEDS a, [EdgeRef])
 mutateNEs q xs f = (GV.modify (f es) q2, es)
     where
+      es :: [EdgeRef]
       es       = S.toList es'
+      q2 :: QEDS a
+      es' :: S.Stream EdgeRef
       (q2,es') = makeEdges q (S.fromList xs)
 
 
@@ -189,13 +193,18 @@ deleteEdges ∷ QEDS a → S.Stream EdgeRef → QEDS a
 deleteEdges q xs = mutate q (\v → S.mapM_ (deleteEdgeM v) xs)
 
 
-makeEdges ∷ QEDS a → S.Stream a → (QEDS a, S.Stream EdgeRef)
+makeEdges ∷ forall a. QEDS a → S.Stream a → (QEDS a, S.Stream EdgeRef)
 makeEdges z xs = (qeds, S.fromList $ reverse zs)
     where
+      qeds :: QEDS a
+      zs :: [EdgeRef]
       (qeds,zs) = S.foldl f (z,[]) xs
           where
+            f :: forall p. (QEDS p, [EdgeRef]) -> p -> (QEDS p, [EdgeRef])
             f (q,es) a = (q2,e:es)
                 where
+                  q2 :: QEDS p
+                  e :: EdgeRef
                   (q2,e) = makeEdge q a
 
 
@@ -218,10 +227,13 @@ makeEdge q a = (q2,e)
 ring ∷ QEDS a → (QEDS a → EdgeRef → EdgeRef) → EdgeRef → (S.Stream EdgeRef)
 ring q f start@(i,_,_) = S.unfoldr g (Just start)
     where
+      g :: Maybe EdgeRef -> Maybe (EdgeRef, Maybe (Index, Direction, Orientation))
       g Nothing = Nothing
       g (Just e) | j /= i    = Just (e,Just e')
                  | otherwise = Just (e, Nothing)
                  where
+                   j :: Index
+                   e' :: (Index,Direction,Orientation)
                    e'@(j,_,_) = f q e
 
 
