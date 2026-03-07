@@ -12,7 +12,7 @@ Cabal-Version:       >=1.6
 Library
   Build-Depends:     base >= 3 && < 5, random >= 1, vector >= 0.6
   Exposed-modules:   Data.QuadEdge, Data.QuadEdge.Base
-  ghc-options:       -Wall -Odph
+  ghc-options:       -Wall -O2
 
 source-repository head
   type:     darcs
