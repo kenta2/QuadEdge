@@ -74,16 +74,16 @@ spliceM q a b
   | (isPrimal a && isPrimal b) || (isDual a && isDual b)
   = do oa ← onextM q a
        if b == flip oa
-	  then return ()
+          then return ()
           else do
                ob ← onextM q b
-	       let x  = rot oa
+               let x  = rot oa
                    y  = rot ob
-	       ox ← onextM q x
+               ox ← onextM q x
                oy ← onextM q y
-	       update a y ob
+               update a y ob
                update b x oa
-	       update x b oy
+               update x b oy
                update y a ox
 
   | otherwise = error "QuadEdge.splice: one primal and one dual edge"
@@ -94,7 +94,7 @@ spliceM q a b
                                MGV.write q i (Just $ updET e r n)
 
   update (i,r,Flipped) z _  = do Just e ← MGV.read q i
-	                         MGV.write q i (Just $ updET e (incrDir r) (flip z))
+                                 MGV.write q i (Just $ updET e (incrDir r) (flip z))
 
   updET e r v = e { edgeTable = updateET (edgeTable e) r v }
 
@@ -134,7 +134,7 @@ edgerefs q = GV.unfoldr f 0
 
 -- | Look up an edge. The edge must be valid.
 
-getEdge	∷ QEDS a → EdgeRef → Edge a
+getEdge ∷ QEDS a → EdgeRef → Edge a
 getEdge q (i,_,_) = let Just e = q GV.! i
                     in e
 
