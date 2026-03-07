@@ -96,7 +96,7 @@ toList s = build (\c n -> toListFB c n s)
 -- This supports foldr/build list fusion that GHC implements
 toListFB :: (a -> b -> b) -> b -> Stream a -> b
 {-# INLINE [0] toListFB #-}
-toListFB c n (M.Stream step s) = go s
+toListFB c n (M.Stream step previous) = go previous
   where
     go s = case unId (step s) of
              Yield x s' -> x `c` go s'
