@@ -27,7 +27,7 @@ import qualified Data.Vector as IV
 import qualified Data.Vector.Mutable as MV
 import qualified Data.Vector.Generic as GV
 import qualified Data.Vector.Generic.Mutable as MGV
-import qualified Data.Vector.Fusion.Stream as S
+import qualified Data.Vector.Fusion.Bundle as S
 
 import System.Random
 
@@ -60,7 +60,7 @@ mutateNEs q xs f = (GV.modify (f es) q2, es)
       es :: [EdgeRef]
       es       = S.toList es'
       q2 :: QEDS a
-      es' :: S.Stream EdgeRef
+      es' :: S.Bundle anothervector EdgeRef
       (q2,es') = makeEdges q (S.fromList xs)
 
 
@@ -189,11 +189,11 @@ updateAttr q (i,_,_) a = GV.modify f q
 
 -- | Delete a set of edges in one pass, using mutate and deleteEdgeM
 
-deleteEdges ∷ QEDS a → S.Stream EdgeRef → QEDS a
+deleteEdges ∷ QEDS a → S.Bundle internalvector EdgeRef → QEDS a
 deleteEdges q xs = mutate q (\v → S.mapM_ (deleteEdgeM v) xs)
 
 
-makeEdges ∷ forall a. QEDS a → S.Stream a → (QEDS a, S.Stream EdgeRef)
+makeEdges ∷ forall a internalvector anothervector. QEDS a → S.Bundle internalvector a → (QEDS a, S.Bundle anothervector EdgeRef)
 makeEdges z xs = (qeds, S.fromList $ reverse zs)
     where
       qeds :: QEDS a
@@ -224,7 +224,7 @@ makeEdge q a = (q2,e)
 
 -- | Returns a stream of adjacent edges using the given Adjacency Operator
 
-ring ∷ QEDS a → (QEDS a → EdgeRef → EdgeRef) → EdgeRef → (S.Stream EdgeRef)
+ring ∷ QEDS a → (QEDS a → EdgeRef → EdgeRef) → EdgeRef → (S.Bundle internalvector EdgeRef)
 ring q f start@(i,_,_) = S.unfoldr g (Just start)
     where
       g :: Maybe EdgeRef -> Maybe (EdgeRef, Maybe (Index, Direction, Orientation))
