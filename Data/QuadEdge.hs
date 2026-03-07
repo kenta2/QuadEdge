@@ -138,8 +138,7 @@ edgerefs q = GV.unfoldr f 0
 -- | Look up an edge. The edge must be valid.
 
 getEdge ∷ QEDS a → EdgeRef → Edge a
-getEdge q (i,_,_) = let Just e = q GV.! i
-                    in e
+getEdge q (i,_,_) = fromJust $ q GV.! i
 
 -- | Look up the attributes of an edge. The edge must be valid.
 
