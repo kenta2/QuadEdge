@@ -58,7 +58,7 @@ type Stream = M.Stream Id
 -- | Convert a pure stream to a monadic stream
 liftStream :: Monad m => Stream a -> M.Stream m a
 {-# INLINE_STREAM liftStream #-}
-liftStream (M.Stream step s sz) = M.Stream (return . unId . step) s sz
+liftStream (M.Stream step s) = M.Stream (return . unId . step) s
 
 -- Folding
 -- -------
@@ -96,7 +96,7 @@ toList s = build (\c n -> toListFB c n s)
 -- This supports foldr/build list fusion that GHC implements
 toListFB :: (a -> b -> b) -> b -> Stream a -> b
 {-# INLINE [0] toListFB #-}
-toListFB c n (M.Stream step s _) = go s
+toListFB c n (M.Stream step s) = go s
   where
     go s = case unId (step s) of
              Yield x s' -> x `c` go s'
