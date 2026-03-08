@@ -9,7 +9,7 @@
 -- Maintainer  : Roman Leshchinskiy <rl@cse.unsw.edu.au>
 -- Stability   : experimental
 -- Portability : non-portable
--- 
+--
 -- Streams for stream fusion
 --
 
@@ -40,7 +40,7 @@ import GHC.Base ( build )
 
 #include "vector.h"
 
--- | The type of pure streams 
+-- | The type of pure streams
 type Stream = M.Stream Id
 
 -- | Convert a pure stream to a monadic stream
