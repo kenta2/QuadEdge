@@ -14,6 +14,7 @@ Library
   Exposed-modules:   Data.QuadEdge, Data.QuadEdge.Base
   Other-modules:     Data.QuadEdge.Stream
   ghc-options:       -Wall -O2
+  Include-Dirs:      include
 
 source-repository head
   type:     darcs

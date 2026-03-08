@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances, Rank2Types, BangPatterns #-}
+{-# LANGUAGE CPP #-}
 
 -- |
 -- Module      : Data.Vector.Fusion.Stream
