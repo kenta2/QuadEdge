@@ -30,7 +30,7 @@ module Data.Vector.Fusion.Stream (
 ) where
 
 import Data.Vector.Fusion.Util
-import Data.Vector.Fusion.Stream.Monadic ( Step(..), SPEC(..) )
+import Data.Vector.Fusion.Stream.Monadic ( Step(..) )
 import qualified Data.Vector.Fusion.Stream.Monadic as M
 
 import Prelude hiding ( length, null,
