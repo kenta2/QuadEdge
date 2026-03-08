@@ -34,19 +34,7 @@ import Data.Vector.Fusion.Util(Id(unId))
 import Data.Vector.Fusion.Stream.Monadic( Step(Yield,Skip,Done) )
 import qualified Data.Vector.Fusion.Stream.Monadic as M
 
-import Prelude hiding ( length, null,
-                        replicate, (++),
-                        head, last, (!!),
-                        init, tail, take, drop,
-                        map, concatMap,
-                        zipWith, zipWith3, zip, zip3,
-                        filter, takeWhile, dropWhile,
-                        elem, notElem,
-                        foldl, foldl1, foldr, foldr1,
-                        and, or,
-                        scanl, scanl1,
-                        enumFromTo, enumFromThenTo,
-                        mapM, mapM_ )
+import Prelude hiding ( foldl, mapM_ )
 
 import GHC.Base ( build )
 
