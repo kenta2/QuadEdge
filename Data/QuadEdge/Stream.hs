@@ -30,8 +30,8 @@ module Data.QuadEdge.Stream (
   mapM_
 ) where
 
-import Data.Vector.Fusion.Util
-import Data.Vector.Fusion.Stream.Monadic ( Step(..) )
+import Data.Vector.Fusion.Util(Id(unId))
+import Data.Vector.Fusion.Stream.Monadic( Step(Yield,Skip,Done) )
 import qualified Data.Vector.Fusion.Stream.Monadic as M
 
 import Prelude hiding ( length, null,
