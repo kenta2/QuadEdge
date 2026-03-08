@@ -27,7 +27,7 @@ import qualified Data.Vector as IV
 import qualified Data.Vector.Mutable as MV
 import qualified Data.Vector.Generic as GV
 import qualified Data.Vector.Generic.Mutable as MGV
-import qualified Data.Vector.Fusion.Stream as S
+import qualified Data.QuadEdge.Stream as S
 
 import System.Random
 
