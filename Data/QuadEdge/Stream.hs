@@ -12,7 +12,7 @@
 -- Streams for stream fusion
 --
 
-module Data.Vector.Fusion.Stream (
+module Data.QuadEdge.Stream (
   -- * Types
   Stream,
 
